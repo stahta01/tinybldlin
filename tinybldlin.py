@@ -23,7 +23,7 @@
 import os
 import sys
 import gobject
-sys.path.append("/home/fjv/Proyectos/tinybldlin/modules")
+sys.path.append("modules")
 import searchserial
 import detectpic
 import loadsavesettings
@@ -41,7 +41,7 @@ except:
             
 
 
-path_images='/home/fjv/Proyectos/tinybldlin/modules/images/'
+path_images='modules/images/'
 blue=path_images+'blue.ico'
 red=path_images+'red.ico'
 green=path_images+'green.ico'
@@ -65,7 +65,7 @@ class Tinybldlin():
     
             #Getting Tinybldlin from glade file
             builder = gtk.Builder()
-            builder.add_from_file("/home/fjv/Proyectos/tinybldlin/glade/Tinybldlin.glade")
+            builder.add_from_file("glade/Tinybldlin.glade")
 
             #Automagicaly connecting signals
             builder.connect_signals(self)
