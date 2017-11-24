@@ -52,12 +52,13 @@ def check_pic(PORT,BAUD,RESET_RTS):
     family=None
 
     ser = serial.Serial(PORT,BAUD,timeout=0.1)
+    
     if RESET_RTS:
-            ser.setRTS(1)
-            time.sleep(.1)
-            ser.setRTS(0)
-            time.sleep(.1)
-
+        ser.setRTS(1)
+        time.sleep(.1)
+        ser.setRTS(0)
+        time.sleep(.1)
+    
     #Ask PIC IDE
     ser.write(chr(0xC1))
           

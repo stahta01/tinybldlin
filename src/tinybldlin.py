@@ -4,7 +4,7 @@
 ###############################################################################
 ##tinybldlin.py Writed by Fernando Juarez V.
 ##
-##CopyLeft  2009
+##CopyLeft  2012
 ##
 ##This program is free software: you can redistribute it and/or modify
 ##it under the terms of the GNU General Public License as published by
@@ -20,18 +20,32 @@
 ##along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###############################################################################
 
-import os
-import sys
-import gobject
-sys.path.append("modules")
-import searchserial
-import detectpic
-import loadsavesettings
-import chunkhexfile
-import transferhex
-import time
-import browse
-import terminal
+try:
+    import os
+    import sys
+    import gobject
+    import searchserial
+    import detectpic
+    import loadsavesettings
+    import chunkhexfile
+    import transferhex
+    import time
+    import browse
+    import terminal
+except:
+    import os
+    import sys
+    import gobject
+    sys.path.append("/usr/share/tinybldlin/modules")
+    import searchserial
+    import detectpic
+    import loadsavesettings
+    import chunkhexfile
+    import transferhex
+    import time
+    import browse
+    import terminal
+    
 try:
     import gtk
 except:
@@ -40,12 +54,19 @@ except:
             \n sudo apt-get install python-gtk2  '
             
 
-
-path_images='modules/images/'
-blue=path_images+'blue.ico'
-red=path_images+'red.ico'
-green=path_images+'green.ico'
-yellow=path_images+'yellow.ico'
+try:
+    path_images='modules/images/'
+    blue=path_images+'blue.ico'
+    red=path_images+'red.ico'
+    green=path_images+'green.ico'
+    yellow=path_images+'yellow.ico'
+    
+except:
+    path_images='/usr/share/tinybldlin/modules/images/'
+    blue=path_images+'blue.ico'
+    red=path_images+'red.ico'
+    green=path_images+'green.ico'
+    yellow=path_images+'yellow.ico'
 
 
 class Tinybldlin():
@@ -65,7 +86,11 @@ class Tinybldlin():
     
             #Getting Tinybldlin from glade file
             builder = gtk.Builder()
-            builder.add_from_file("glade/Tinybldlin.glade")
+            try:
+                builder.add_from_file("glade/Tinybldlin.glade")
+                
+            except:
+                builder.add_from_file("/usr/share/tinybldlin/glade/Tinybldlin.glade")
 
             #Automagicaly connecting signals
             builder.connect_signals(self)
@@ -155,9 +180,7 @@ class Tinybldlin():
             self.want_to_abort=False
             self.close=0
             self.go=1
-            self.text_back=''
-            
-            
+            self.text_back=''  
         else:
             file,port,baud,rts,check= self.treat_args(options)
             print file,port,baud,rts,check
@@ -208,6 +231,7 @@ class Tinybldlin():
             message = chunkhexfile.chunk_hexfile(hex_file_path)
             if message==None:
                 self.write_message('\nChoose a valid hexfile')
+                print '\nChoose a valid hexfile'
                 while gtk.events_pending():
                     gtk.main_iteration()
                 
@@ -239,7 +263,7 @@ class Tinybldlin():
                 self.want_to_abort=False
                 break
 
-        #if after ask several times PIC ide tinybld dont have a vali max_flask
+        #if after ask several times PIC ide tinybld dont have a valid max_flask
         #return an error message
         if max_flash==None:
             self.write_message(message)
@@ -264,6 +288,16 @@ class Tinybldlin():
         
         if write_status=='OK':
             self.write_message('\n Write OK at ' +str(begin)+' time: '+str(end-start)[0:5]+' sec')
+            print '\n Write OK at ' +str(begin)+' time: '+str(end-start)[0:5]+' sec'
+        if write_status=='Fail':
+            self.write_message('\n ERROR!!!!')
+            if rts:
+                self.write_message('\n if you dont use reset by software uncheck RTS')
+            self.progress_bar.set_fraction(0)
+            self.abort_button.hide()
+            self.status_icon.set_from_file(red)
+            gobject.timeout_add(2000, self.on_timeout)
+            return
                   
         self.progress_bar.set_fraction(0)
         self.abort_button.hide()

@@ -2,6 +2,8 @@
 # coding: latin-1
 import os
 import sys
+import time
+
 try:
     import serial
 except:
@@ -18,7 +20,21 @@ def transfer_hex(gui,filename,port,baud,type,max_flash,family,rts):
     global s    
     s=serial.Serial(port,baud,timeout=1)
     
+    #at this point we will make a reset by software
+    #RTS and DTR will remain ON during RESET  
+    if rts:
+        time.sleep(1)
+        s.setRTS(1)
+       
+        time.sleep(.1)
+        s.setRTS(0)
+        time.sleep(.1)
+        #Ask PIC IDE
+        s.write(chr(0xC1))
+        ret=s.read(2)
+        
     pic_mem={}
+    
 
     if max_flash==None:
         return  'Fail'
@@ -250,6 +266,7 @@ def transfer_hex(gui,filename,port,baud,type,max_flash,family,rts):
                 hex_pos=pic_pos+j
             else :
                 print "Error, family not suported:",family
+                s.close()
                 return 'Fail'
 
             
@@ -279,6 +296,7 @@ def transfer_hex(gui,filename,port,baud,type,max_flash,family,rts):
                 
 def write_mem(pic_pos,mem_block,family,rts):
     
+      
     s.flushInput()
         
     hm=(pic_pos/256)&255
@@ -321,6 +339,8 @@ def write_mem(pic_pos,mem_block,family,rts):
     
     if ret!="K":
         print "Error writing to the memory position: "+ hex(pic_pos)+"\n\n"
+        
+        s.close()
         
     while gtk.events_pending():
         gtk.main_iteration()

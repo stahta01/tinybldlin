@@ -7,6 +7,10 @@
       <item>USART_SDCC_18F452.c</item>
       <item>usart.h</item>
     </files>
+    <opened_files>
+      <item>USART_SDCC_18F452.c</item>
+      <item>usart.h</item>
+    </opened_files>
   </general>
   <editors/>
 </piklab>
